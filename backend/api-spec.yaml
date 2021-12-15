@@ -1,0 +1,157 @@
+openapi: 3.0.0
+info:
+  title: Solvro backend recruitment task - API for reserving tables in a restaurant
+  version: 1.0.1
+paths:
+  /reservations:
+    post:
+      summary: Creates a new reservation for a table.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/Reservation"
+      responses:
+        "201":
+          description: "Created"
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  reservationId:
+                    type: string
+    get:
+      summary: "Returns a list of all reservations for the given date"
+      parameters:
+        - in: query
+          name: date
+          description: Date in ISO 8061 format.
+          schema:
+            type: string
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfReservations"
+  /reservations/{id}:
+    put:
+      summary: "Requests a cancellation of the reservation"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status:
+                  type: string
+                  example: "requested cancellation"
+      responses:
+        "200":
+          description: "Success"
+
+    delete:
+      summary: "Confirms the cancellation request by hecking the verification code"
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                verificationCode:
+                  type: string
+      responses:
+        "200":
+          description: "Success"
+
+  /tables:
+    get:
+      summary: "Returns a list of all available tables based on the given time and number of people."
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+          description: Table status. If the query is to return free tables, the parameter value should be set to "free". 
+          example: "free"
+        - in: query
+          name: min_seats
+          schema:
+            type: number
+        - in: query
+          name: start_date
+          schema:
+            type: string
+          description: Date in ISO 8601 format.
+        - in: query
+          name: duration
+          schema:
+            type: string
+
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ListOfTables"
+components:
+  schemas:
+    Reservation:
+      type: object
+      properties:
+        date:
+          type: string
+          description: Date in ISO 8061 format.
+        duration:
+          type: number
+        seatNumber:
+          type: number
+        fullName:
+          type: string
+        phone:
+          type: string
+        email:
+          type: string
+        numberOfSeats:
+          type: number
+    ListOfReservations:
+      type: object
+      properties:
+        bookings:
+          type: array
+          items:
+            $ref: "#/components/schemas/Reservation"
+    Table:
+      type: object
+      properties:
+        number:
+          type: number
+        minNumberOfSeats:
+          type: number
+        maxNumberOfSeats:
+          type: number
+    ListOfTables:
+      type: object
+      properties:
+        tables:
+          type: array
+          items:
+            $ref: "#/components/schemas/Table"
