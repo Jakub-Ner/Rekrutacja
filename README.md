@@ -1,7 +1,3 @@
-# Backend
-
-**Disclaimer**. Dnia 19.10.2021 został dodany wymagany format dat. Jeżeli zacząłeś/zaczęłaś implementować zadanie wykorzystując inny format, nie musisz go zmieniać.
-
 Napisz API do zarządzania rezerwacjami stolików w restauracji.
 
 W [pliku](https://github.com/Solvro/Rekrutacja/blob/master/backend/seats.json) JSON znajduje się lista stolików w restauracji. Każdy stolik ma  przypisany swój numer oraz minimalną i maksymalną liczbę miejsc.
