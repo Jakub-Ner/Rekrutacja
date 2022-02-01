@@ -1,34 +1,53 @@
-<div align="center">
-<img src="./assets/logo_solvro.png" height="200">
-</div>
+Napisz API do zarządzania rezerwacjami stolików w restauracji.
 
-# Rekrutacja
+W [pliku](https://github.com/Solvro/Rekrutacja/blob/master/backend/seats.json) JSON znajduje się lista stolików w restauracji. Każdy stolik ma  przypisany swój numer oraz minimalną i maksymalną liczbę miejsc.
 
-W ramach rekrutacji stworzyliśmy cztery zadania z czterech różnych kategorii:
 
-  - [Frontend](./frontend/zadanie.md)
-  - [Mobile](./mobile/zadanie.md)
-  - [Backend](./backend/zadanie.md)
-  - [Machine Learning](./machine_learning/zadanie.md)
 
-Termin wykonania zadań to <del>25.10 23:59</del> **31.10 23:59** - termin został przedłużony!
+### Endpointy do zaimplementowania:
 
-Wybierz **jedno** zadanie, a rozwiązanie udostępnij nam w postaci pull requestu ([instrukcja tutaj](#forktutorial)). Zadania powinny być rozwiązywane indywidualnie. [Link do pull requestu należy wysłać przez formularz zgłoszeniowy](https://forms.gle/6baysgGyRhC1KeSD8). W razie jakichkolwiek pytań nie bójcie się ich zadawać za pośrednictwem fanpage'u facebooku :)  
+Wszystkie endpointy powinny być zaimplementowane zgodnie z [specyfikacją](https://github.com/Solvro/Rekrutacja/blob/master/backend/api-spec.yaml). Specyfikacja nie definiuje wszystkich odpowiedzi HTTP. Wybierz właściwe kody statusów, w zależności od sposobu realizacji zapytania.
 
-**Niezależnie od decyzji przyjęcia, każdemu kandydatowi zostanie zwrócony feedback odnośnie jego rozwiązania zadania.**  
+#### 
 
-**Powodzenia!**
+#### Składanie rezerwacji.
 
-<a name="forktutorial"></a>
-### Jak przesłać zadanie rekrutacyjne
-1.	Wejdź na stronę GitHub repozytorium rekrutacji (https://github.com/Solvro/Rekrutacja/)
-2.	Użyj przycisku Fork w prawym, górnym rogu
-3.	(Jeśli dotyczy) Wybierz miejsce „forka” repozytorium - najlepiej twoje prywatne konto.
-4.	Zostaniesz przeniesiony na swoją „kopię” repozytorium.
-5.	Sklonuj lokalnie repozytorium (ze swojego konta) i popisz się swoimi umiejętnościami! 😊
-    * *Pamiętaj aby pliki twojego projektu były w odpowiednim podkatalogu (backend/frontend/machine_learning lub mobile)*
-6.	Po wypchnięciu swoich zmian na TWOJE repozytorium, wejdź do Pull Requests (w twoim „forku”) i kliknij New pull request
-7.	Upewnij się, że wybrane opcje są ok (Pull Request ze swojego do naszego repozytorium)
-8.	Potwierdź przyciskiem „Create pull request”
-9.	Możesz dodatkowo sprawdzić czy widzimy twoje zgłoszenie - https://github.com/Solvro/Rekrutacja/pulls
-10.	To wszystko! Niedługo zaczniemy dodawać nasze komentarze do twojego kodu w tym pull requeście!
+- Zapytanie POST: `/reservations`.
+- Endpoint pozwala klientowi na złożenie nowej rezerwacji na stolik.
+- Istotne jest, aby przed zapisaniem rezerwacji sprawdzić poprawność wszystkich danych, oraz dostępność stolika w wybranym czasie.
+- Po udanej rezerwacji należy wysłać wiadomość na podany przez  użytkownika adres e-mail. W wiadomości powinny znaleźć się wszystkie  dane oraz unikalny numer rezerwacji. Do wysyłania "fake maili" możesz skorzystać z [Ethereal](https://ethereal.email/).
+- Należy zwrócić właściwą odpowiedź HTTP i zapisać rezerwację bazie danych.
+
+#### 
+
+#### Pobranie listy rezerwacji danego dnia
+
+- Zapytanie GET: `/reservations`
+- Endpoint pozwala pracownikom restauracji na pobranie listy wszystkich rezerwacji danego dnia.
+
+#### 
+
+#### Wysłanie prośby o anulowanie rezerwacji
+
+- Zapytanie PUT: `/reservations/{id}`
+- Endpoint pozwala klientowi na wysłanie prośby o anulowanie rezerwacji.
+- Użytkownik w parametrze zapytania wysyła unikalne id rezerwacji, które otrzymał na maila.
+- W treści zapytania wysyłana jest prośba o zmianę statusu rezerwacji na wartość "requested cancellation".
+- Rezerwacja może zostać anulowana najpóźniej 2 godziny przed godziną na którą został zarezerwowany stolik.
+- Jeśli anulowanie jest możliwe należy wysłać wiadomość e-mail na  adres użytkownika. W treści maila należy umieścić 6-cyfrowy kod  weryfikacyjny, który służy do potwierdzenia tożsamości.
+
+#### 
+
+#### Potwierdzenie anulowania rezerwacji
+
+- Zapytanie DELETE: `/reservations/{id}`
+- Endpoint służy do potwierdzenia anulowania rezerwacji.
+- W treści zapytania użytkownik wysyła kod weryfikacyjny, który otrzymał w wiadomości e-mail.
+- Jeżeli kod jest poprawny i możliwe jest anulowanie rezerwacji, to  należy usunąć ją z bazy danych i potwierdzić anulowanie e-mailem.
+
+#### 
+
+#### Pobranie listy wolnych stolików
+
+- Zapytanie GET: `/tables`
+- Endpoint pozwala klientowi na pobranie listy wszystkich dostępnych  do rezerwacji stolików w określonym czasie i z odpowiednią liczbą  miejsc.
